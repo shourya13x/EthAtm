@@ -9,6 +9,8 @@ export default function HomePage() {
   const [balance, setBalance] = useState(undefined);
   const [owner, setOwner] = useState(undefined);
   const [newOwner, setNewOwner] = useState("");
+  const [transferTo, setTransferTo] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const atmABI = atm_abi.abi;
@@ -45,11 +47,7 @@ export default function HomePage() {
         getATMContract(accounts[0]);
       }
     } catch (error) {
-      if (error.code === 4001) {
-        console.error("User rejected the request");
-      } else {
-        console.error("Error connecting account:", error);
-      }
+      handleError(error, "connecting account");
     }
   };
 
@@ -84,11 +82,7 @@ export default function HomePage() {
         await tx.wait();
         getBalance();
       } catch (error) {
-        if (error.code === 4001) {
-          console.error("User rejected the request");
-        } else {
-          console.error("Error during deposit:", error);
-        }
+        handleError(error, "deposit");
       }
     }
   };
@@ -100,11 +94,7 @@ export default function HomePage() {
         await tx.wait();
         getBalance();
       } catch (error) {
-        if (error.code === 4001) {
-          console.error("User rejected the request");
-        } else {
-          console.error("Error during withdrawal:", error);
-        }
+        handleError(error, "withdraw");
       }
     }
   };
@@ -116,12 +106,28 @@ export default function HomePage() {
         await tx.wait();
         getOwner();
       } catch (error) {
-        if (error.code === 4001) {
-          console.error("User rejected the request");
-        } else {
-          console.error("Error changing owner:", error);
-        }
+        handleError(error, "change owner");
       }
+    }
+  };
+
+  const transferFunds = async () => {
+    if (atm && transferTo && transferAmount) {
+      try {
+        let tx = await atm.transferFunds(transferTo, ethers.utils.parseEther(transferAmount));
+        await tx.wait();
+        getBalance();
+      } catch (error) {
+        handleError(error, "transfer funds");
+      }
+    }
+  };
+
+  const handleError = (error, action) => {
+    if (error.code === 4001) {
+      console.error(`User rejected the request to ${action}`);
+    } else {
+      console.error(`Error during ${action}:`, error);
     }
   };
 
@@ -181,24 +187,46 @@ export default function HomePage() {
           />
           <button onClick={changeOwner}>Change Owner</button>
         </div>
+        <div>
+          <h3>Transfer Funds</h3>
+          <input
+            type="text"
+            placeholder="Recipient Address"
+            value={transferTo}
+            onChange={(e) => setTransferTo(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Amount in ETH"
+            value={transferAmount}
+            onChange={(e) => setTransferAmount(e.target.value)}
+          />
+          <button onClick={transferFunds}>Transfer</button>
+        </div>
       </div>
     );
   };
 
   return (
     <main className="container">
-      <header><h1>Welcome to the Metacrafters ATM!</h1></header>
+      <header><h1>Welcome to the SHOURYA'S ATM!</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
           text-align: center;
           background-color: #2c3e50;
-          color: white;
+          color: yellow;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
+        }
+        button {
+          margin: 5px;
+        }
+        input {
+          margin: 5px;
         }
       `}
       </style>
