@@ -1,12 +1,10 @@
-# Starter Next/Hardhat Project
+MetaCrafters ATM
 
-After cloning the github, you will want to do the following to get the code running on your computer.
+Welcome to MetaCrafters ATM, a decentralized application (dApp) built on Ethereum using React and ethers.js. This dApp allows users to interact with a smart contract to deposit and withdraw Ether (ETH) using MetaMask.
 
-1. Inside the project directory, in the terminal type: npm i
-2. Open two additional terminals in your VS code
-3. In the second terminal type: npx hardhat node
-4. In the third terminal, type: npx hardhat run --network localhost scripts/deploy.js
-5. Back in the first terminal, type npm run dev to launch the front-end.
+Features
 
-After this, the project will be running on your localhost. 
-Typically at http://localhost:3000/
+	•	MetaMask Integration: Connect your MetaMask wallet to interact with the Ethereum blockchain.
+	•	Account Interaction: View your connected Ethereum account and current balance.
+	•	Smart Contract Interaction: Deposit and withdraw 1 ETH at a time from a predefined smart contract.
+	•	Change Owner Functionality: Capability to change the owner of the smart contract directly from the UI.
