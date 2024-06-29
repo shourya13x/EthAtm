@@ -214,8 +214,8 @@ export default function HomePage() {
       <style jsx>{`
         .container {
           text-align: center;
-          background-color: #2c3e50;
-          color: yellow;
+          background-color: #1a1a2e;
+          color: #eaeaea;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
