@@ -1,60 +1,51 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-//import "hardhat/console.sol";
-
 contract Assessment {
     address payable public owner;
-    uint256 public balance;
 
     event Deposit(uint256 amount);
     event Withdraw(uint256 amount);
+    event OwnerChanged(address indexed oldOwner, address indexed newOwner);
 
-    constructor(uint initBalance) payable {
+    constructor() payable {
         owner = payable(msg.sender);
-        balance = initBalance;
     }
 
     function getBalance() public view returns(uint256){
-        return balance;
+        return address(this).balance;
     }
 
-    function deposit(uint256 _amount) public payable {
-        uint _previousBalance = balance;
-
-        // make sure this is the owner
-        require(msg.sender == owner, "You are not the owner of this account");
-
-        // perform transaction
-        balance += _amount;
-
-        // assert transaction completed successfully
-        assert(balance == _previousBalance + _amount);
-
-        // emit the event
-        emit Deposit(_amount);
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than zero");
+        emit Deposit(msg.value);
     }
 
-    // custom error
     error InsufficientBalance(uint256 balance, uint256 withdrawAmount);
 
     function withdraw(uint256 _withdrawAmount) public {
         require(msg.sender == owner, "You are not the owner of this account");
-        uint _previousBalance = balance;
-        if (balance < _withdrawAmount) {
+        if (address(this).balance < _withdrawAmount) {
             revert InsufficientBalance({
-                balance: balance,
+                balance: address(this).balance,
                 withdrawAmount: _withdrawAmount
             });
         }
 
-        // withdraw the given amount
-        balance -= _withdrawAmount;
+        (bool success, ) = owner.call{value: _withdrawAmount}("");
+        require(success, "Transfer failed");
 
-        // assert the balance is correct
-        assert(balance == (_previousBalance - _withdrawAmount));
-
-        // emit the event
         emit Withdraw(_withdrawAmount);
+    }
+
+    function showOwner() public view returns (address) {
+        return owner;
+    }
+
+    function changeOwner(address payable newOwner) public {
+        require(msg.sender == owner, "You are not the owner of this account");
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnerChanged(oldOwner, newOwner);
     }
 }
